@@ -253,6 +253,8 @@ export namespace SuggestionsProblem {
 interface ESLintClass extends Object {
 	// https://eslint.org/docs/developer-guide/nodejs-api#-eslintlinttextcode-options
 	lintText(content: string, options: {filePath?: string; warnIgnored?: boolean}): Promise<ESLintDocumentReport[]>;
+	// https://eslint.org/docs/latest/integrate/nodejs-api#-eslintlintfilespatterns
+	lintFiles(patterns: string | string[]): Promise<ESLintDocumentReport[]>;
 	// https://eslint.org/docs/developer-guide/nodejs-api#-eslintispathignoredfilepath
 	isPathIgnored(path: string): Promise<boolean>;
 	// https://eslint.org/docs/developer-guide/nodejs-api#-eslintgetrulesmetaforresultsresults
@@ -334,6 +336,7 @@ namespace RuleData {
 
 interface CLIEngine {
 	executeOnText(content: string, file?: string, warn?: boolean): ESLintReport;
+	executeOnFile(content: string, file?: string, warn?: boolean): ESLintReport;
 	isPathIgnored(path: string): boolean;
 	// This is only available from v4.15.0 forward
 	getRules?(): Map<string, RuleData>;
@@ -361,6 +364,10 @@ class ESLintClassEmulator implements ESLintClass {
 	}
 	async lintText(content: string, options: { filePath?: string | undefined; warnIgnored?: boolean | undefined }): Promise<ESLintDocumentReport[]> {
 		return this.cli.executeOnText(content, options.filePath, options.warnIgnored).results;
+	}
+	async lintFiles(_patterns: string | string[]): Promise<ESLintDocumentReport[]> {
+		// return this.cli.executeOnFile(patterns).results;
+		throw new Error('TODO');
 	}
 	async isPathIgnored(path: string): Promise<boolean> {
 		return this.cli.isPathIgnored(path);
